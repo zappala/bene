@@ -6,11 +6,14 @@ from src import node
 from src import link
 from src import packet
 
+import random
+
 class Generator(object):
-    def __init__(self,node,duration):
+    def __init__(self,node,load,duration):
         self.node = node
-        self.start = 0
+        self.load = load
         self.duration = duration
+        self.start = 0
         self.ident = 1
 
     def handle(self,event):
@@ -22,15 +25,18 @@ class Generator(object):
         # generate a packet
         self.ident += 1
         p = packet.Packet(destination_address=2,ident=self.ident,protocol='delay',length=1000)
-        self.node.handle_packet(p)
-        Sim.scheduler.add(delay=0.1, event='generate', handler=self.handle)
+        Sim.scheduler.add(delay=0, event=p, handler=self.node.handle_packet)
+        # schedule the next time we should generate a packet
+        Sim.scheduler.add(delay=random.expovariate(self.load), event='generate', handler=self.handle)
 
 class DelayHandler(object):
     def handle_packet(self,packet):
         print Sim.scheduler.current_time(),packet.ident,packet.created,Sim.scheduler.current_time() - packet.created,packet.queueing_delay
 
 if __name__ == '__main__':
+    # parameters
     Sim.scheduler.reset()
+
     # setup network
     n1 = node.Node()
     n2 = node.Node()
@@ -42,7 +48,12 @@ if __name__ == '__main__':
     n2.add_forwarding_entry(address=1,link=l)
     d = DelayHandler()
     n2.add_protocol(protocol="delay",handler=d)
-    # setup generator
-    g = Generator(node=n1, duration=10)
+
+    # setup packet generator
+    max_rate = 1000000/(1000*8)
+    load = 0.8*max_rate
+    g = Generator(node=n1, load=load,duration=10)
     Sim.scheduler.add(delay=0, event='generate', handler=g.handle)
+    
+    # run the simulation
     Sim.scheduler.run()
