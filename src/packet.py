@@ -16,6 +16,6 @@ class Packet(object):
         if self.body:
             length = len(self.body)
         # measurements
-        self.created = Sim.scheduler.current_time()
+        self.created = None
         self.enter_queue = 0
         self.queueing_delay = 0

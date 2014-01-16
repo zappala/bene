@@ -39,6 +39,10 @@ class Node(object):
     ## Handling packets ##
 
     def handle_packet(self,packet):
+        # if this is the first time we have seen this packet, set its
+        # creation timestamp
+        if packet.created == None:
+            packet.created = Sim.scheduler.current_time()
         # check if the packet is for me
         for link in self.links:
             if link.address == packet.destination_address:
