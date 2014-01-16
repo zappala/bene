@@ -33,6 +33,8 @@ class Link(object):
     def transmit(self,packet):
         packet.queueing_delay += Sim.scheduler.current_time() - packet.enter_queue
         delay = (8.0*packet.length)/self.bandwidth
+        packet.transmission_delay += delay
+        packet.propagation_delay += self.propagation
         # schedule packet arrival at end of link
         Sim.scheduler.add(delay=delay+self.propagation,event=packet,handler=self.endpoint.handle_packet)
         # schedule next transmission

@@ -19,3 +19,5 @@ class Packet(object):
         self.created = None
         self.enter_queue = 0
         self.queueing_delay = 0
+        self.transmission_delay = 0
+        self.propagation_delay = 0
