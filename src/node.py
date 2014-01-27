@@ -47,6 +47,7 @@ class Node(object):
         for link in self.links:
             if link.address == packet.destination_address:
                 self.receive_packet(packet)
+                return
 
         # forward the packet
         self.forward_packet(packet)
