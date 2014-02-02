@@ -46,6 +46,7 @@ class Node(object):
         # check if the packet is for me
         for link in self.links:
             if link.address == packet.destination_address:
+                Sim.trace("%d received packet" % (packet.destination_address))
                 self.receive_packet(packet)
                 return
 
@@ -59,5 +60,8 @@ class Node(object):
 
     def forward_packet(self,packet):
         if packet.destination_address not in self.forwarding_table:
+            Sim.trace("%d no routing entry for %d" % (self.links[0].address,packet.destination_address))
             return
-        self.forwarding_table[packet.destination_address].handle_packet(packet)
+        link = self.forwarding_table[packet.destination_address]
+        Sim.trace("%d forwarding packet to %d" % (link.address,packet.destination_address))
+        link.handle_packet(packet)

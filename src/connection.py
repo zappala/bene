@@ -1,4 +1,4 @@
-class Connection(Object):
+class Connection(object):
     def __init__(self,transport,source_address,source_port,
                  destination_address,destination_port,app=None):
         # setup transport protocol demultiplexing

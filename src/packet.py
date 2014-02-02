@@ -14,6 +14,8 @@ class Packet(object):
         self.body = body
         self.length = length
         if self.body:
+            self.length = len(self.body)
+        if self.body:
             length = len(self.body)
         # measurements
         self.created = None
