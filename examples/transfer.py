@@ -39,8 +39,13 @@ class Main(object):
                           default='test.txt',
                           help="filename to send")
 
+        parser.add_option("-l","--loss",type="float",dest="loss",
+                          default=0.0,
+                          help="random loss rate")
+
         (options,args) = parser.parse_args()
         self.filename = options.filename
+        self.loss = options.loss
 
     def diff(self):
         args = ['diff','-u',self.filename,self.directory+'/'+self.filename]
@@ -61,10 +66,10 @@ class Main(object):
         # setup network
         n1 = Node()
         n2 = Node()
-        l = Link(address=1,startpoint=n1,endpoint=n2)
+        l = Link(address=1,startpoint=n1,endpoint=n2,loss=self.loss)
         n1.add_link(l)
         n1.add_forwarding_entry(address=2,link=l)
-        l = Link(address=2,startpoint=n2,endpoint=n1)
+        l = Link(address=2,startpoint=n2,endpoint=n1,loss=self.loss)
         n2.add_link(l)
         n2.add_forwarding_entry(address=1,link=l)
 
