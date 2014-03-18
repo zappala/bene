@@ -1,7 +1,10 @@
 from sim import Sim
 
+import copy
+
 class Node(object):
-    def __init__(self):
+    def __init__(self,hostname):
+        self.hostname = hostname
         self.links = []
         self.protocols = {}
         self.forwarding_table = {}
@@ -38,30 +41,62 @@ class Node(object):
 
     ## Handling packets ##
 
-    def handle_packet(self,packet):
+    def send_packet(self,packet):
         # if this is the first time we have seen this packet, set its
         # creation timestamp
         if packet.created == None:
             packet.created = Sim.scheduler.current_time()
-        # check if the packet is for me
-        for link in self.links:
-            if link.address == packet.destination_address:
-                Sim.trace("%d received packet" % (packet.destination_address))
-                self.receive_packet(packet)
-                return
 
         # forward the packet
         self.forward_packet(packet)
 
     def receive_packet(self,packet):
+        # handle broadcast packets
+        if packet.destination_address == 0:
+            Sim.trace("%s received packet" % (self.hostname))
+            self.deliver_packet(packet)
+        else:
+            # check if unicast packet is for me
+            for link in self.links:
+                if link.address == packet.destination_address:
+                    Sim.trace("%s received packet" % (self.hostname))
+                    self.deliver_packet(packet)
+                    return
+
+        # decrement the TTL and drop if it has reached the last hop
+        packet.ttl = packet.ttl - 1
+        if packet.ttl <= 0:
+            Sim.trace("%s dropping packet due to TTL expired" % (self.hostname))
+            return
+
+        # forward the packet
+        self.forward_packet(packet)
+
+
+    def deliver_packet(self,packet):
         if packet.protocol not in self.protocols:
             return
-        self.protocols[packet.protocol].handle_packet(packet)
+        self.protocols[packet.protocol].receive_packet(packet)
+
 
     def forward_packet(self,packet):
+        if packet.destination_address == 0:
+            # broadcast the packet
+            self.forward_broadcast_packet(packet)
+        else:
+            # forward the packet
+            self.forward_unicast_packet(packet)
+
+    def forward_unicast_packet(self,packet):
         if packet.destination_address not in self.forwarding_table:
-            Sim.trace("%d no routing entry for %d" % (self.links[0].address,packet.destination_address))
+            Sim.trace("%s no routing entry for %d" % (self.hostname,packet.destination_address))
             return
         link = self.forwarding_table[packet.destination_address]
-        Sim.trace("%d forwarding packet to %d" % (link.address,packet.destination_address))
-        link.handle_packet(packet)
+        Sim.trace("%s forwarding packet to %d" % (self.hostname,packet.destination_address))
+        link.send_packet(packet)
+
+    def forward_broadcast_packet(self,packet):
+        for link in self.links:
+            Sim.trace("%s forwarding broadcast packet to %s" % (self.hostname,link.endpoint.hostname))
+            packet_copy = copy.deepcopy(packet)
+            link.send_packet(packet_copy)

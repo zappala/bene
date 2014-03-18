@@ -19,7 +19,7 @@ class AppHandler(object):
             os.makedirs(self.directory)
         self.f = open("%s/%s" % (self.directory,self.filename),'w')
 
-    def handle_packet(self,packet):
+    def receive_packet(self,packet):
         Sim.trace("application got packet with %d bytes" % (packet.length))
         self.f.write(packet.body)
         self.f.flush()

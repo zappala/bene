@@ -20,7 +20,7 @@ class StopAndWait(Connection):
         self.timeout = 1
         self.max_sequence = math.pow(2,64)
 
-    def handle_packet(self,packet):
+    def receive_packet(self,packet):
         # handle ACK
         if self.packet_is_outstanding and packet.ack_number == self.sequence:
             # this acks new data, so advance the send buffer, reset
@@ -39,7 +39,7 @@ class StopAndWait(Connection):
                 self.increment_ack(packet.sequence + packet.length)
                 self.receive_buffer += packet.body
                 # deliver data that is in order
-                self.app.handle_packet(packet)
+                self.app.receive_packet(packet)
             # always send an ACK
             self.send_ack()
 

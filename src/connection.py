@@ -12,11 +12,11 @@ class Connection(object):
         # setup application delivery
         self.app = app
 
-    def handle_packet(self, packet):
+    def receive_packet(self, packet):
         pass
 
     def deliver(self, data):
-        self.app.handle_packet()
+        self.app.receive_packet()
 
     def send(self, data):
         pass

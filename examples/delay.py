@@ -25,12 +25,12 @@ class Generator(object):
         # generate a packet
         self.ident += 1
         p = packet.Packet(destination_address=2,ident=self.ident,protocol='delay',length=1000)
-        Sim.scheduler.add(delay=0, event=p, handler=self.node.handle_packet)
+        Sim.scheduler.add(delay=0, event=p, handler=self.node.send_packet)
         # schedule the next time we should generate a packet
         Sim.scheduler.add(delay=random.expovariate(self.load), event='generate', handler=self.handle)
 
 class DelayHandler(object):
-    def handle_packet(self,packet):
+    def receive_packet(self,packet):
         print Sim.scheduler.current_time(),packet.ident,packet.created,Sim.scheduler.current_time() - packet.created,packet.transmission_delay,packet.propagation_delay,packet.queueing_delay
 
 if __name__ == '__main__':

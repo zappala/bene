@@ -17,7 +17,7 @@ class Link(object):
 
     ## Handling packets ##
 
-    def handle_packet(self,packet):
+    def send_packet(self,packet):
         # drop packet due to queue overflow
         if self.queue_size and len(self.queue) == self.queue_size:
             Sim.trace("%d dropped packet due to queue overflow" % (self.address))
@@ -41,7 +41,7 @@ class Link(object):
         packet.transmission_delay += delay
         packet.propagation_delay += self.propagation
         # schedule packet arrival at end of link
-        Sim.scheduler.add(delay=delay+self.propagation,event=packet,handler=self.endpoint.handle_packet)
+        Sim.scheduler.add(delay=delay+self.propagation,event=packet,handler=self.endpoint.receive_packet)
         # schedule next transmission
         Sim.scheduler.add(delay=delay,event='finish',handler=self.next)
 

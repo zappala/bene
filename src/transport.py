@@ -14,10 +14,10 @@ class Transport(object):
                  source_address,source_port)
         self.binding[tuple] = connection
 
-    def handle_packet(self,packet):
+    def receive_packet(self,packet):
         tuple = (packet.source_address,packet.source_port,
                  packet.destination_address,packet.destination_port)
-        self.binding[tuple].handle_packet(packet)
+        self.binding[tuple].receive_packet(packet)
 
     def send_packet(self,packet):
-        Sim.scheduler.add(delay=0, event=packet, handler=self.node.handle_packet)
+        Sim.scheduler.add(delay=0, event=packet, handler=self.node.send_packet)
