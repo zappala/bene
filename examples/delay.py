@@ -38,8 +38,8 @@ if __name__ == '__main__':
     Sim.scheduler.reset()
 
     # setup network
-    n1 = node.Node()
-    n2 = node.Node()
+    n1 = node.Node('n1')
+    n2 = node.Node('n2')
     l = link.Link(address=1,startpoint=n1,endpoint=n2)
     n1.add_link(l)
     n1.add_forwarding_entry(address=2,link=l)

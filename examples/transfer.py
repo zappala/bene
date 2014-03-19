@@ -64,8 +64,8 @@ class Main(object):
         Sim.set_debug(True)
 
         # setup network
-        n1 = Node()
-        n2 = Node()
+        n1 = Node('n1')
+        n2 = Node('n2')
         l = Link(address=1,startpoint=n1,endpoint=n2,loss=self.loss)
         n1.add_link(l)
         n1.add_forwarding_entry(address=2,link=l)

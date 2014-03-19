@@ -5,6 +5,7 @@ import random
 class Link(object):
     def __init__(self,address=0,startpoint=None,endpoint=None,queue_size=None,
                  bandwidth=1000000.0,propagation=0.001,loss=0):
+        self.running = True
         self.address = address
         self.startpoint = startpoint
         self.endpoint = endpoint
@@ -18,6 +19,9 @@ class Link(object):
     ## Handling packets ##
 
     def send_packet(self,packet):
+        # check if link is running
+        if not self.running:
+            return
         # drop packet due to queue overflow
         if self.queue_size and len(self.queue) == self.queue_size:
             Sim.trace("%d dropped packet due to queue overflow" % (self.address))
@@ -51,3 +55,9 @@ class Link(object):
             self.transmit(packet)
         else:
             self.busy = False
+
+    def down(self,event):
+        self.running = False
+
+    def up(self,event):
+        self.running = True
