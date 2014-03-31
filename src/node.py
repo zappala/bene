@@ -19,6 +19,18 @@ class Node(object):
             return
         self.links.remove(link)
 
+    def get_link(self,name):
+        for link in self.links:
+            if link.endpoint.hostname == name:
+                return link
+        return None
+
+    def get_address(self,name):
+        for link in self.links:
+            if link.endpoint.hostname == name:
+                return link.address
+        return 0
+
     ## Protocols ## 
 
     def add_protocol(self,protocol,handler):

@@ -7,6 +7,8 @@ from src.link import Link
 from src.transport import Transport
 from src.stopandwait import StopAndWait
 
+from networks.network import Network
+
 import optparse
 import os
 import subprocess
@@ -64,14 +66,13 @@ class Main(object):
         Sim.set_debug(True)
 
         # setup network
-        n1 = Node('n1')
-        n2 = Node('n2')
-        l = Link(address=1,startpoint=n1,endpoint=n2,loss=self.loss)
-        n1.add_link(l)
-        n1.add_forwarding_entry(address=2,link=l)
-        l = Link(address=2,startpoint=n2,endpoint=n1,loss=self.loss)
-        n2.add_link(l)
-        n2.add_forwarding_entry(address=1,link=l)
+        net = Network('../networks/one-hop.txt')
+
+        # setup routes
+        n1 = net.get_node('n1')
+        n2 = net.get_node('n2')
+        n1.add_forwarding_entry(address=n2.get_address('n1'),link=n1.links[0])
+        n2.add_forwarding_entry(address=n1.get_address('n2'),link=n2.links[0])
 
         # setup transport
         t1 = Transport(n1)
@@ -81,8 +82,8 @@ class Main(object):
         a = AppHandler(self.filename)
 
         # setup connection
-        c1 = StopAndWait(t1,1,1,2,1,a)
-        c2 = StopAndWait(t2,2,1,1,1,a)
+        c1 = StopAndWait(t1,n1.get_address('n2'),1,n2.get_address('n1'),1,a)
+        c2 = StopAndWait(t2,n2.get_address('n1'),1,n1.get_address('n2'),1,a)
 
         # send a file
         with open(self.filename,'r') as f:

@@ -6,10 +6,12 @@ from src import node
 from src import link
 from src import packet
 
+from networks.network import Network
+
 import random
 
 class Generator(object):
-    def __init__(self,node,load,duration):
+    def __init__(self,node,destination,load,duration):
         self.node = node
         self.load = load
         self.duration = duration
@@ -24,7 +26,7 @@ class Generator(object):
 
         # generate a packet
         self.ident += 1
-        p = packet.Packet(destination_address=2,ident=self.ident,protocol='delay',length=1000)
+        p = packet.Packet(destination_address=destination,ident=self.ident,protocol='delay',length=1000)
         Sim.scheduler.add(delay=0, event=p, handler=self.node.send_packet)
         # schedule the next time we should generate a packet
         Sim.scheduler.add(delay=random.expovariate(self.load), event='generate', handler=self.handle)
@@ -38,21 +40,23 @@ if __name__ == '__main__':
     Sim.scheduler.reset()
 
     # setup network
-    n1 = node.Node('n1')
-    n2 = node.Node('n2')
-    l = link.Link(address=1,startpoint=n1,endpoint=n2)
-    n1.add_link(l)
-    n1.add_forwarding_entry(address=2,link=l)
-    l = link.Link(address=2,startpoint=n2,endpoint=n1)
-    n2.add_link(l)
-    n2.add_forwarding_entry(address=1,link=l)
+    net = Network('../networks/one-hop.txt')
+
+    # setup routes
+    n1 = net.get_node('n1')
+    n2 = net.get_node('n2')
+    n1.add_forwarding_entry(address=n2.get_address('n1'),link=n1.links[0])
+    n2.add_forwarding_entry(address=n1.get_address('n2'),link=n2.links[0])
+
+    # setup app
     d = DelayHandler()
-    n2.add_protocol(protocol="delay",handler=d)
+    net.nodes['n2'].add_protocol(protocol="delay",handler=d)
 
     # setup packet generator
+    destination = n2.get_address('n1')
     max_rate = 1000000/(1000*8)
     load = 0.8*max_rate
-    g = Generator(node=n1, load=load,duration=10)
+    g = Generator(node=n1,destination=destination,load=load,duration=10)
     Sim.scheduler.add(delay=0, event='generate', handler=g.handle)
     
     # run the simulation
