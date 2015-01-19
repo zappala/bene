@@ -3,3 +3,6 @@
 n1 n2
 n2 n1
 
+# link configuration
+n1 n2 1Mbps 1ms
+n2 n1 1Mbps 1ms
