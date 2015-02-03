@@ -9,6 +9,9 @@ class Node(object):
         self.protocols = {}
         self.forwarding_table = {}
 
+    def trace(self,message):
+        Sim.trace("Node",message)
+
     ## Links ## 
 
     def add_link(self,link):
@@ -65,20 +68,20 @@ class Node(object):
     def receive_packet(self,packet):
         # handle broadcast packets
         if packet.destination_address == 0:
-            Sim.trace("%s received packet" % (self.hostname))
+            self.trace("%s received packet" % (self.hostname))
             self.deliver_packet(packet)
         else:
             # check if unicast packet is for me
             for link in self.links:
                 if link.address == packet.destination_address:
-                    Sim.trace("%s received packet" % (self.hostname))
+                    self.trace("%s received packet" % (self.hostname))
                     self.deliver_packet(packet)
                     return
 
         # decrement the TTL and drop if it has reached the last hop
         packet.ttl = packet.ttl - 1
         if packet.ttl <= 0:
-            Sim.trace("%s dropping packet due to TTL expired" % (self.hostname))
+            self.trace("%s dropping packet due to TTL expired" % (self.hostname))
             return
 
         # forward the packet
@@ -101,14 +104,14 @@ class Node(object):
 
     def forward_unicast_packet(self,packet):
         if packet.destination_address not in self.forwarding_table:
-            Sim.trace("%s no routing entry for %d" % (self.hostname,packet.destination_address))
+            self.trace("%s no routing entry for %d" % (self.hostname,packet.destination_address))
             return
         link = self.forwarding_table[packet.destination_address]
-        Sim.trace("%s forwarding packet to %d" % (self.hostname,packet.destination_address))
+        self.trace("%s forwarding packet to %d" % (self.hostname,packet.destination_address))
         link.send_packet(packet)
 
     def forward_broadcast_packet(self,packet):
         for link in self.links:
-            Sim.trace("%s forwarding broadcast packet to %s" % (self.hostname,link.endpoint.hostname))
+            self.trace("%s forwarding broadcast packet to %s" % (self.hostname,link.endpoint.hostname))
             packet_copy = copy.deepcopy(packet)
             link.send_packet(packet_copy)

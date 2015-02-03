@@ -2,14 +2,14 @@ import scheduler
 
 class Sim(object):
     scheduler = scheduler.Scheduler()
-    debug = False
+    debug = {}
 
     @staticmethod
-    def set_debug(value):
-        Sim.debug = value
+    def set_debug(kind):
+        Sim.debug[kind] = True
 
     @staticmethod
-    def trace(message):
-        if Sim.debug:
+    def trace(kind,message):
+        if kind in Sim.debug:
             print Sim.scheduler.current_time(),message
 

@@ -57,6 +57,11 @@ class Network(object):
             self.nodes[name] = node.Node(name)
         return self.nodes[name]
 
+    def loss(self,loss):
+        for node in self.nodes.values():
+            for link in node.links:
+                link.loss = loss
+
     def set_bandwidth(self,link,rate):
         numeric_rate = self.convert(rate)
         if rate.endswith("Gbps"):
