@@ -86,17 +86,17 @@ class Chunk(object):
 class ReceiveBuffer(object):
     ''' Receive buffer for transport protocols '''
     def __init__(self):
-        ''' The buffer holds all the packets that have been received,
-            indexed by starting sequence number. Packets may come in
-            out of order, so this buffer will order them. Packets may
-            also come in with duplicate data, so this buffer will
-            remove any duplicate bytes.'''
+        ''' The buffer holds all the data that has been received,
+            indexed by starting sequence number. Data may come in out
+            of order, so this buffer will order them. Data may also be
+            duplicated, so this buffer will remove any duplicate
+            bytes.'''
         self.buffer = {}
         # starting sequence number
         self.base = 0
 
     def put(self,data,sequence):
-        ''' Add a packet to the receive buffer. Put it in order of
+        ''' Add data to the receive buffer. Put it in order of
         sequence number and remove any duplicate data.'''
         # ignore old chunk
         if sequence < self.base:
