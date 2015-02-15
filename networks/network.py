@@ -80,13 +80,13 @@ class Network(object):
 
     def set_queue(self,link,size):
         numeric_size = self.convert(size)
-        if size.endswith("packets"):
-            link.queue_size = size
+        if size.endswith("pkts"):
+            link.queue_size = numeric_size
 
     def set_loss(self,link,loss):
         numeric_loss = self.convert(loss)
         if loss.endswith("loss"):
-            link.loss = loss
+            link.loss = numeric_loss
             
     def convert(self,value):
         return float(re.sub("[^0-9.]", "", value))
