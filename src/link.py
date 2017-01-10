@@ -1,10 +1,11 @@
-from sim import Sim
-
 import random
 
+from sim import Sim
+
+
 class Link(object):
-    def __init__(self,address=0,startpoint=None,endpoint=None,queue_size=None,
-                 bandwidth=1000000.0,propagation=0.001,loss=0):
+    def __init__(self, address=0, startpoint=None, endpoint=None, queue_size=None,
+                 bandwidth=1000000.0, propagation=0.001, loss=0):
         self.running = True
         self.address = address
         self.startpoint = startpoint
@@ -16,12 +17,12 @@ class Link(object):
         self.busy = False
         self.queue = []
 
-    def trace(self,message):
-        Sim.trace("Link",message)
+    def trace(self, message):
+        Sim.trace("Link", message)
 
     ## Handling packets ##
 
-    def send_packet(self,packet):
+    def send_packet(self, packet):
         # check if link is running
         if not self.running:
             return
@@ -41,14 +42,14 @@ class Link(object):
         else:
             # add packet to queue
             self.queue.append(packet)
-        
-    def transmit(self,packet):
+
+    def transmit(self, packet):
         packet.queueing_delay += Sim.scheduler.current_time() - packet.enter_queue
-        delay = (8.0*packet.length)/self.bandwidth
+        delay = (8.0 * packet.length) / self.bandwidth
         packet.transmission_delay += delay
         packet.propagation_delay += self.propagation
         # schedule packet arrival at end of link
-        Sim.scheduler.add(delay=delay+self.propagation,event=packet,handler=self.endpoint.receive_packet)
+        Sim.scheduler.add(delay=delay + self.propagation, event=packet, handler=self.endpoint.receive_packet)
         # schedule next transmission
         Sim.scheduler.add(delay=delay, event='finish', handler=self.get_next_packet)
 
@@ -59,8 +60,8 @@ class Link(object):
         else:
             self.busy = False
 
-    def down(self,event):
+    def down(self, event):
         self.running = False
 
-    def up(self,event):
+    def up(self, event):
         self.running = True
