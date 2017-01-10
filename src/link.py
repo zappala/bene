@@ -50,9 +50,9 @@ class Link(object):
         # schedule packet arrival at end of link
         Sim.scheduler.add(delay=delay+self.propagation,event=packet,handler=self.endpoint.receive_packet)
         # schedule next transmission
-        Sim.scheduler.add(delay=delay,event='finish',handler=self.next)
+        Sim.scheduler.add(delay=delay, event='finish', handler=self.get_next_packet)
 
-    def next(self,event):
+    def get_next_packet(self, event):
         if len(self.queue) > 0:
             packet = self.queue.pop(0)
             self.transmit(packet)
