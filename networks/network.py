@@ -3,8 +3,8 @@ import sys
 
 sys.path.append('..')
 
-from src import link
-from src import node
+from src.link import Link
+from src.node import Node
 
 
 class Network(object):
@@ -34,7 +34,7 @@ class Network(object):
         start = self.get_node(fields[0])
         for i in range(1, len(fields)):
             end = self.get_node(fields[i])
-            l = link.Link(self.address, start, endpoint=end)
+            l = Link(self.address, start, endpoint=end)
             self.address += 1
             start.add_link(l)
 
@@ -56,7 +56,7 @@ class Network(object):
 
     def get_node(self, name):
         if name not in self.nodes:
-            self.nodes[name] = node.Node(name)
+            self.nodes[name] = Node(name)
         return self.nodes[name]
 
     def loss(self, loss):
@@ -90,5 +90,6 @@ class Network(object):
         if loss.endswith("loss"):
             link.loss = numeric_loss
 
-    def convert(self, value):
+    @staticmethod
+    def convert(value):
         return float(re.sub("[^0-9.]", "", value))

@@ -10,10 +10,11 @@ class Node(object):
         self.protocols = {}
         self.forwarding_table = {}
 
-    def trace(self, message):
+    @staticmethod
+    def trace(message):
         Sim.trace("Node", message)
 
-    ## Links ## 
+    # -- Links --
 
     def add_link(self, link):
         self.links.append(link)
@@ -35,7 +36,7 @@ class Node(object):
                 return link.address
         return 0
 
-    ## Protocols ## 
+    # -- Protocols --
 
     def add_protocol(self, protocol, handler):
         self.protocols[protocol] = handler
@@ -45,22 +46,22 @@ class Node(object):
             return
         del self.protocols[protocol]
 
-    ## Forwarding table ##
+    # -- Forwarding table --
 
     def add_forwarding_entry(self, address, link):
         self.forwarding_table[address] = link
 
-    def delete_forwarding_entry(self, address, link):
+    def delete_forwarding_entry(self, address):
         if address not in self.forwarding_table:
             return
         del self.forwarding_table[address]
 
-    ## Handling packets ##
+    # -- Handling packets --
 
     def send_packet(self, packet):
         # if this is the first time we have seen this packet, set its
         # creation timestamp
-        if packet.created == None:
+        if packet.created is None:
             packet.created = Sim.scheduler.current_time()
 
         # forward the packet
@@ -69,20 +70,20 @@ class Node(object):
     def receive_packet(self, packet):
         # handle broadcast packets
         if packet.destination_address == 0:
-            self.trace("%s received packet" % (self.hostname))
+            self.trace("%s received packet" % self.hostname)
             self.deliver_packet(packet)
         else:
             # check if unicast packet is for me
             for link in self.links:
                 if link.address == packet.destination_address:
-                    self.trace("%s received packet" % (self.hostname))
+                    self.trace("%s received packet" % self.hostname)
                     self.deliver_packet(packet)
                     return
 
         # decrement the TTL and drop if it has reached the last hop
-        packet.ttl = packet.ttl - 1
+        packet.ttl -= 1
         if packet.ttl <= 0:
-            self.trace("%s dropping packet due to TTL expired" % (self.hostname))
+            self.trace("%s dropping packet due to TTL expired" % self.hostname)
             return
 
         # forward the packet

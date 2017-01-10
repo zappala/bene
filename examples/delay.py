@@ -3,7 +3,7 @@ import sys
 sys.path.append('..')
 
 from src.sim import Sim
-from src import packet
+from src.packet import Packet
 
 from networks.network import Network
 
@@ -14,6 +14,7 @@ class Generator(object):
     def __init__(self, node, destination, load, duration):
         self.node = node
         self.load = load
+        self.destination = destination
         self.duration = duration
         self.start = 0
         self.ident = 1
@@ -26,18 +27,25 @@ class Generator(object):
 
         # generate a packet
         self.ident += 1
-        p = packet.Packet(destination_address=destination, ident=self.ident, protocol='delay', length=1000)
+        p = Packet(destination_address=self.destination, ident=self.ident, protocol='delay', length=1000)
         Sim.scheduler.add(delay=0, event=p, handler=self.node.send_packet)
         # schedule the next time we should generate a packet
         Sim.scheduler.add(delay=random.expovariate(self.load), event='generate', handler=self.handle)
 
 
 class DelayHandler(object):
-    def receive_packet(self, packet):
-        print Sim.scheduler.current_time(), packet.ident, packet.created, Sim.scheduler.current_time() - packet.created, packet.transmission_delay, packet.propagation_delay, packet.queueing_delay
+    @staticmethod
+    def receive_packet(packet):
+        print (Sim.scheduler.current_time(),
+               packet.ident,
+               packet.created,
+               Sim.scheduler.current_time() - packet.created,
+               packet.transmission_delay,
+               packet.propagation_delay,
+               packet.queueing_delay)
 
 
-if __name__ == '__main__':
+def main():
     # parameters
     Sim.scheduler.reset()
 
@@ -63,3 +71,6 @@ if __name__ == '__main__':
 
     # run the simulation
     Sim.scheduler.run()
+
+if __name__ == '__main__':
+    main()

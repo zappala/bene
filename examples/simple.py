@@ -3,17 +3,24 @@ import sys
 sys.path.append('..')
 
 from src.sim import Sim
-from src import packet
+from src.packet import Packet
 
 from networks.network import Network
 
 
 class DelayHandler(object):
-    def receive_packet(self, packet):
-        print Sim.scheduler.current_time(), packet.ident, packet.created, Sim.scheduler.current_time() - packet.created, packet.transmission_delay, packet.propagation_delay, packet.queueing_delay
+    @staticmethod
+    def receive_packet(packet):
+        print (Sim.scheduler.current_time(),
+               packet.ident,
+               packet.created,
+               Sim.scheduler.current_time() - packet.created,
+               packet.transmission_delay,
+               packet.propagation_delay,
+               packet.queueing_delay)
 
 
-if __name__ == '__main__':
+def main():
     # parameters
     Sim.scheduler.reset()
 
@@ -31,22 +38,25 @@ if __name__ == '__main__':
     net.nodes['n2'].add_protocol(protocol="delay", handler=d)
 
     # send one packet
-    p = packet.Packet(destination_address=n2.get_address('n1'), ident=1, protocol='delay', length=1000)
+    p = Packet(destination_address=n2.get_address('n1'), ident=1, protocol='delay', length=1000)
     Sim.scheduler.add(delay=0, event=p, handler=n1.send_packet)
 
     # take the link down
     Sim.scheduler.add(delay=1, event=None, handler=n1.get_link('n2').down)
 
     # send one packet (it won't go through)
-    p = packet.Packet(destination_address=n2.get_address('n1'), ident=1, protocol='delay', length=1000)
+    p = Packet(destination_address=n2.get_address('n1'), ident=1, protocol='delay', length=1000)
     Sim.scheduler.add(delay=1.1, event=p, handler=n1.send_packet)
 
     # bring the link up
     Sim.scheduler.add(delay=2, event=None, handler=n1.get_link('n2').up)
 
     # send one packet (and now it goes through)
-    p = packet.Packet(destination_address=n2.get_address('n1'), ident=1, protocol='delay', length=1000)
+    p = Packet(destination_address=n2.get_address('n1'), ident=1, protocol='delay', length=1000)
     Sim.scheduler.add(delay=2.1, event=p, handler=n1.send_packet)
 
     # run the simulation
     Sim.scheduler.run()
+
+if __name__ == '__main__':
+    main()

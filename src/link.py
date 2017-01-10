@@ -17,10 +17,11 @@ class Link(object):
         self.busy = False
         self.queue = []
 
-    def trace(self, message):
+    @staticmethod
+    def trace(message):
         Sim.trace("Link", message)
 
-    ## Handling packets ##
+    # -- Handling packets --
 
     def send_packet(self, packet):
         # check if link is running
@@ -28,11 +29,11 @@ class Link(object):
             return
         # drop packet due to queue overflow
         if self.queue_size and len(self.queue) == self.queue_size:
-            self.trace("%d dropped packet due to queue overflow" % (self.address))
+            self.trace("%d dropped packet due to queue overflow" % self.address)
             return
         # drop packet due to random loss
         if self.loss > 0 and random.random() < self.loss:
-            self.trace("%d dropped packet due to random loss" % (self.address))
+            self.trace("%d dropped packet due to random loss" % self.address)
             return
         packet.enter_queue = Sim.scheduler.current_time()
         if len(self.queue) == 0 and not self.busy:

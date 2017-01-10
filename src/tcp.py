@@ -16,7 +16,7 @@ class TCP(Connection):
         Connection.__init__(self, transport, source_address, source_port,
                             destination_address, destination_port, app)
 
-        ### Sender functionality
+        # -- Sender functionality
 
         # send window; represents the total number of bytes that may
         # be outstanding at one time
@@ -33,7 +33,7 @@ class TCP(Connection):
         # timeout duration in seconds
         self.timeout = 1
 
-        ### Receiver functionality
+        # -- Receiver functionality
 
         # receive buffer
         self.receive_buffer = ReceiveBuffer()

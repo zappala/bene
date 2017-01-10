@@ -33,6 +33,8 @@ class Main(object):
         self.parse_options()
         self.run()
         self.diff()
+        self.filename = None
+        self.loss = None
 
     def parse_options(self):
         parser = optparse.OptionParser(usage="%prog [options]",

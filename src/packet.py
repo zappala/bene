@@ -14,8 +14,6 @@ class Packet(object):
         self.length = length
         if self.body:
             self.length = len(self.body)
-        if self.body:
-            length = len(self.body)
         # measurements
         self.created = None
         self.enter_queue = 0
