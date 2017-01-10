@@ -1,4 +1,4 @@
-from packet import Packet
+from .packet import Packet
 
 
 class TCPPacket(Packet):

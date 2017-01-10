@@ -1,4 +1,4 @@
-from sim import Sim
+from .sim import Sim
 
 
 class Transport(object):

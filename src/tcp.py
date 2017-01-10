@@ -1,11 +1,7 @@
-import sys
-
-sys.path.append('..')
-
-from src.sim import Sim
-from src.connection import Connection
-from src.tcppacket import TCPPacket
-from src.buffer import SendBuffer, ReceiveBuffer
+from .buffer import SendBuffer, ReceiveBuffer
+from .connection import Connection
+from .sim import Sim
+from .tcppacket import TCPPacket
 
 
 class TCP(Connection):

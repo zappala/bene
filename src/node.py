@@ -1,6 +1,6 @@
 import copy
 
-from sim import Sim
+from .sim import Sim
 
 
 class Node(object):
