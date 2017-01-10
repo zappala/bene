@@ -1,5 +1,5 @@
 class Connection(object):
-    ''' A transport connection between two hosts. '''
+    """ A transport connection between two hosts. """
 
     def __init__(self, transport, source_address, source_port,
                  destination_address, destination_port, app=None):

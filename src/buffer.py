@@ -1,37 +1,37 @@
 class SendBuffer(object):
-    ''' Send buffer for transport protocols '''
+    """ Send buffer for transport protocols """
 
     def __init__(self):
-        ''' The buffer holds a series of characters to send. The base
+        """ The buffer holds a series of characters to send. The base
             is the starting sequence number of the buffer. The next
             value is the sequence number for the next data that has
             not yet been sent. The last value is the sequence number
-            for the last data in the buffer.'''
+            for the last data in the buffer."""
         self.buffer = ''
         self.base_seq = 0
         self.next_seq = 0
         self.last_seq = 0
 
     def available(self):
-        ''' Return number of bytes available to send. This is data that
-            could be sent but hasn't.'''
+        """ Return number of bytes available to send. This is data that
+            could be sent but hasn't."""
         return self.last_seq - self.next_seq
 
     def outstanding(self):
-        ''' Return number of outstanding bytes. This is data that has
-            been sent but not yet acked.'''
+        """ Return number of outstanding bytes. This is data that has
+            been sent but not yet acked."""
         return self.next_seq - self.base_seq
 
     def put(self, data):
-        ''' Put some data into the buffer '''
+        """ Put some data into the buffer """
         self.buffer += data
         self.last_seq += len(data)
 
     def get(self, size):
-        ''' Get the next data that has not been sent yet. Return the
+        """ Get the next data that has not been sent yet. Return the
             data and the starting sequence number of this data. The
             total amount of data returned is at most size bytes but may
-            be less.'''
+            be less."""
         if self.next_seq + size > self.last_seq:
             size = self.last_seq - self.next_seq
         start = self.next_seq - self.base_seq
@@ -41,12 +41,12 @@ class SendBuffer(object):
         return data, sequence
 
     def resend(self, size, reset=True):
-        ''' Get oldest data that is outstanding, so it can be
+        """ Get oldest data that is outstanding, so it can be
         resent. Return the data and the starting sequence number of
         this data. The total amount of data returned is at most size
         bytes but may be less. If reset is true, then all other data
         that was outstanding is now treated as if it was never sent. This
-        is standard practice for TCP when retransmitting.'''
+        is standard practice for TCP when retransmitting."""
         if self.base_seq + size > self.last_seq:
             size = self.last_seq - self.base_seq
         data = self.buffer[:size]
@@ -56,11 +56,11 @@ class SendBuffer(object):
         return data, sequence
 
     def slide(self, sequence):
-        ''' Slide the receive window to the acked sequence
+        """ Slide the receive window to the acked sequence
             number. This sequence number represents the lowest
             sequence number that is not yet acked. In other words, the
             ACK is for all data less than but not equal to this
-            sequence number.'''
+            sequence number."""
         acked = sequence - self.base_seq
         self.buffer = self.buffer[acked:]
         self.base_seq = sequence
@@ -70,7 +70,7 @@ class SendBuffer(object):
 
 
 class Chunk(object):
-    ''' Chunk of data stored in receive buffer. '''
+    """ Chunk of data stored in receive buffer. """
 
     def __init__(self, data, sequence):
         self.data = data
@@ -78,8 +78,8 @@ class Chunk(object):
         self.sequence = sequence
 
     def trim(self, sequence, length):
-        ''' Check for overlap with a previous chunk and trim this chunk
-            if needed.'''
+        """ Check for overlap with a previous chunk and trim this chunk
+            if needed."""
         # check for overlap
         if self.sequence < sequence + length:
             self.data = self.data[sequence + length:]
@@ -88,21 +88,21 @@ class Chunk(object):
 
 
 class ReceiveBuffer(object):
-    ''' Receive buffer for transport protocols '''
+    """ Receive buffer for transport protocols """
 
     def __init__(self):
-        ''' The buffer holds all the data that has been received,
+        """ The buffer holds all the data that has been received,
             indexed by starting sequence number. Data may come in out
             of order, so this buffer will order them. Data may also be
             duplicated, so this buffer will remove any duplicate
-            bytes.'''
+            bytes."""
         self.buffer = {}
         # starting sequence number
         self.base = 0
 
     def put(self, data, sequence):
-        ''' Add data to the receive buffer. Put it in order of
-        sequence number and remove any duplicate data.'''
+        """ Add data to the receive buffer. Put it in order of
+        sequence number and remove any duplicate data."""
         # ignore old chunk
         if sequence < self.base:
             return
@@ -126,8 +126,8 @@ class ReceiveBuffer(object):
             length = len(chunk.data)
 
     def get(self):
-        ''' Get and remove all data that is in order. Return the data
-            and its starting sequence number. '''
+        """ Get and remove all data that is in order. Return the data
+            and its starting sequence number. """
         data = ''
         start = self.base
         for sequence in sorted(self.buffer.keys()):
