@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys
 
 sys.path.append('..')
@@ -36,13 +38,13 @@ class Generator(object):
 class DelayHandler(object):
     @staticmethod
     def receive_packet(packet):
-        print (Sim.scheduler.current_time(),
+        print((Sim.scheduler.current_time(),
                packet.ident,
                packet.created,
                Sim.scheduler.current_time() - packet.created,
                packet.transmission_delay,
                packet.propagation_delay,
-               packet.queueing_delay)
+               packet.queueing_delay))
 
 
 def main():
@@ -64,7 +66,7 @@ def main():
 
     # setup packet generator
     destination = n2.get_address('n1')
-    max_rate = 1000000 / (1000 * 8)
+    max_rate = 1000000 // (1000 * 8)
     load = 0.8 * max_rate
     g = Generator(node=n1, destination=destination, load=load, duration=10)
     Sim.scheduler.add(delay=0, event='generate', handler=g.handle)

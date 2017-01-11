@@ -1,3 +1,6 @@
+
+from __future__ import print_function
+
 import sys
 
 sys.path.append('..')
@@ -55,13 +58,13 @@ class Main(object):
     def diff(self):
         args = ['diff', '-u', self.filename, self.directory + '/' + self.filename]
         result = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
-        print
+        print()
         if not result:
-            print "File transfer correct!"
+            print("File transfer correct!")
         else:
-            print "File transfer failed. Here is the diff:"
-            print
-            print result
+            print("File transfer failed. Here is the diff:")
+            print()
+            print(result)
 
     def run(self):
         # parameters
