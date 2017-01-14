@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys
 
 sys.path.append('..')
@@ -13,7 +15,7 @@ class BroadcastApp(object):
         self.node = node
 
     def receive_packet(self, packet):
-        print Sim.scheduler.current_time(), self.node.hostname, packet.ident
+        print(Sim.scheduler.current_time(), self.node.hostname, packet.ident)
 
 
 def main():

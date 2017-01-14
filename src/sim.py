@@ -1,4 +1,6 @@
-import scheduler
+from __future__ import print_function
+
+from . import scheduler
 
 
 class Sim(object):
@@ -12,4 +14,4 @@ class Sim(object):
     @staticmethod
     def trace(kind, message):
         if kind in Sim.debug:
-            print Sim.scheduler.current_time(), message
+            print(Sim.scheduler.current_time(), message)
