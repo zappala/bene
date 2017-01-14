@@ -49,6 +49,8 @@ class Network(object):
                 self.set_bandwidth(l, fields[i])
             if fields[i].endswith("ms"):
                 self.set_delay(l, fields[i])
+            if fields[i].endswith("seconds"):
+                self.set_delay(l, fields[i])
             if fields[i].endswith("pkts"):
                 self.set_queue(l, fields[i])
             if fields[i].endswith("loss"):
@@ -79,6 +81,8 @@ class Network(object):
         numeric_delay = self.convert(delay)
         if delay.endswith("ms"):
             link.propagation = numeric_delay / 1000.0
+        if delay.endswith("seconds"):
+            link.propagation = numeric_delay
 
     def set_queue(self, link, size):
         numeric_size = self.convert(size)
