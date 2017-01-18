@@ -22,7 +22,7 @@ class AppHandler(object):
         self.directory = 'received'
         if not os.path.exists(self.directory):
             os.makedirs(self.directory)
-        self.f = open("%s/%s" % (self.directory, self.filename), 'wb')
+        self.f = open(os.path.join(self.directory, self.filename), 'wb')
 
     def receive_data(self, data):
         Sim.trace('AppHandler', "application got %d bytes" % (len(data)))
@@ -56,7 +56,7 @@ class Main(object):
         self.loss = options.loss
 
     def diff(self):
-        args = ['diff', '-u', self.filename, self.directory + '/' + self.filename]
+        args = ['diff', '-u', self.filename, os.path.join(self.directory, self.filename)]
         result = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         print()
         if not result:
