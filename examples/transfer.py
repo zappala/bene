@@ -22,7 +22,7 @@ class AppHandler(object):
         self.directory = 'received'
         if not os.path.exists(self.directory):
             os.makedirs(self.directory)
-        self.f = open("%s/%s" % (self.directory, self.filename), 'w')
+        self.f = open("%s/%s" % (self.directory, self.filename), 'wb')
 
     def receive_data(self, data):
         Sim.trace('AppHandler', "application got %d bytes" % (len(data)))
@@ -94,7 +94,7 @@ class Main(object):
         c2 = TCP(t2, n2.get_address('n1'), 1, n1.get_address('n2'), 1, a, window=3000)
 
         # send a file
-        with open(self.filename, 'r') as f:
+        with open(self.filename, 'rb') as f:
             while True:
                 data = f.read(1000)
                 if not data:

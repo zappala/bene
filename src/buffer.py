@@ -7,7 +7,7 @@ class SendBuffer(object):
             value is the sequence number for the next data that has
             not yet been sent. The last value is the sequence number
             for the last data in the buffer."""
-        self.buffer = ''
+        self.buffer = b''
         self.base_seq = 0
         self.next_seq = 0
         self.last_seq = 0
@@ -128,7 +128,7 @@ class ReceiveBuffer(object):
     def get(self):
         """ Get and remove all data that is in order. Return the data
             and its starting sequence number. """
-        data = ''
+        data = b''
         start = self.base
         for sequence in sorted(self.buffer.keys()):
             chunk = self.buffer[sequence]
