@@ -98,13 +98,13 @@ class ReceiveBuffer(object):
             bytes."""
         self.buffer = {}
         # starting sequence number
-        self.base = 0
+        self.base_seq = 0
 
     def put(self, data, sequence):
         """ Add data to the receive buffer. Put it in order of
         sequence number and remove any duplicate data."""
         # ignore old chunk
-        if sequence < self.base:
+        if sequence < self.base_seq:
             return
         # ignore duplicate chunk
         if sequence in self.buffer:
@@ -129,12 +129,12 @@ class ReceiveBuffer(object):
         """ Get and remove all data that is in order. Return the data
             and its starting sequence number. """
         data = b''
-        start = self.base
+        start = self.base_seq
         for sequence in sorted(self.buffer.keys()):
             chunk = self.buffer[sequence]
-            if chunk.sequence == self.base:
+            if chunk.sequence == self.base_seq:
                 # append the data, adjust the base, delete the chunk
                 data += chunk.data
-                self.base += chunk.length
+                self.base_seq += chunk.length
                 del self.buffer[chunk.sequence]
         return data, start
