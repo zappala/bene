@@ -20,7 +20,7 @@ class Network(object):
             for line in f.readlines():
                 if line.startswith('#'):
                     continue
-                if line == "\n":
+                if line.strip() == "":
                     state = 'links'
                 if state == 'network':
                     self.create_network(line)
