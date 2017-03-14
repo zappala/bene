@@ -34,8 +34,11 @@ class Plotter:
         transmit = df[df.Event == 'transmit'].copy()
         transmit.plot(x='Time',y='Sequence Number',kind='scatter',marker='s',s=2,figsize=(11,3),ax=ax1)
         # drop
-        drop = df[df.Event == 'drop'].copy()
-        drop.plot(x='Time',y='Sequence Number',kind='scatter',marker='x',s=10,figsize=(11,3),ax=ax1)
+        try:
+            drop = df[df.Event == 'drop'].copy()
+            drop.plot(x='Time',y='Sequence Number',kind='scatter',marker='x',s=10,figsize=(11,3),ax=ax1)
+        except:
+            pass
         # ack
         ack = df[df.Event == 'ack'].copy()
         ax = ack.plot(x='Time',y='Sequence Number',kind='scatter',marker='.',s=2,figsize=(11,3),ax=ax1)
