@@ -8,7 +8,7 @@ class TCP(Connection):
     """ A TCP connection between two hosts."""
 
     def __init__(self, transport, source_address, source_port,
-                 destination_address, destination_port, app=None, window=1000):
+                 destination_address, destination_port, app=None, window=1000,drop=[]):
         Connection.__init__(self, transport, source_address, source_port,
                             destination_address, destination_port, app)
 
@@ -24,6 +24,11 @@ class TCP(Connection):
         # largest sequence number that has been ACKed so far; represents
         # the next sequence number the client expects to receive
         self.sequence = 0
+        # plot sequence numbers
+        self.plot_sequence_header()
+        # packets to drop
+        self.drop = drop
+        self.dropped = []
         # retransmission timer
         self.timer = None
         # timeout duration in seconds
@@ -40,6 +45,14 @@ class TCP(Connection):
     def trace(self, message):
         """ Print debugging messages. """
         Sim.trace("TCP", message)
+
+    def plot_sequence_header(self):
+        if self.node.hostname =='n1':
+            Sim.plot('sequence.csv','Time,Sequence Number,Event\n')
+
+    def plot_sequence(self,sequence,event):
+        if self.node.hostname =='n1':
+            Sim.plot('sequence.csv','%s,%s,%s\n' % (Sim.scheduler.current_time(),sequence,event))
 
     def receive_packet(self, packet):
         """ Receive a packet from the network layer. """
@@ -66,7 +79,15 @@ class TCP(Connection):
                            body=data,
                            sequence=sequence, ack_number=self.ack)
 
+        if sequence in self.drop and not sequence in self.dropped:
+            self.dropped.append(sequence)
+            self.plot_sequence(sequence,'drop')
+            self.trace("%s (%d) dropping TCP segment to %d for %d" % (
+                self.node.hostname, self.source_address, self.destination_address, packet.sequence))
+            return
+
         # send the packet
+        self.plot_sequence(sequence,'send')
         self.trace("%s (%d) sending TCP segment to %d for %d" % (
             self.node.hostname, self.source_address, self.destination_address, packet.sequence))
         self.transport.send_packet(packet)
@@ -77,6 +98,9 @@ class TCP(Connection):
 
     def handle_ack(self, packet):
         """ Handle an incoming ACK. """
+        self.plot_sequence(packet.ack_number - 1000,'ack')
+        self.trace("%s (%d) received ACK from %d for %d" % (
+            self.node.hostname, packet.destination_address, packet.source_address, packet.ack_number))
         self.cancel_timer()
 
     def retransmit(self, event):
