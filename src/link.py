@@ -16,6 +16,8 @@ class Link(object):
         self.loss = loss
         self.busy = False
         self.queue = []
+        if (self.startpoint.hostname == 'n1'):
+            Sim.plot('queue.csv','Time,Queue Size,Event\n')
 
     @staticmethod
     def trace(message):
@@ -30,6 +32,8 @@ class Link(object):
         # drop packet due to queue overflow
         if self.queue_size and len(self.queue) == self.queue_size:
             self.trace("%d dropped packet due to queue overflow" % self.address)
+            if (self.startpoint.hostname == 'n1'):
+                Sim.plot('queue.csv','%s,%s,%s\n' % (Sim.scheduler.current_time(),len(self.queue),'drop'))
             return
         # drop packet due to random loss
         if self.loss > 0 and random.random() < self.loss:
@@ -43,9 +47,12 @@ class Link(object):
         else:
             # add packet to queue
             self.queue.append(packet)
+            if (self.startpoint.hostname == 'n1'):
+                Sim.plot('queue.csv','%s,%s,%s\n' % (Sim.scheduler.current_time(),len(self.queue),'size'))
+
 
     def transmit(self, packet):
-        if packet.body:
+        if (self.startpoint.hostname == 'n1'):
             Sim.plot('sequence.csv','%s,%s,%s\n' % (Sim.scheduler.current_time(),packet.sequence,'transmit'))
         packet.queueing_delay += Sim.scheduler.current_time() - packet.enter_queue
         delay = (8.0 * packet.length) / self.bandwidth
@@ -59,6 +66,8 @@ class Link(object):
     def get_next_packet(self, event):
         if len(self.queue) > 0:
             packet = self.queue.pop(0)
+            if (self.startpoint.hostname == 'n1'):
+                Sim.plot('queue.csv','%s,%s,%s\n' % (Sim.scheduler.current_time(),len(self.queue),'size'))
             self.transmit(packet)
         else:
             self.busy = False
