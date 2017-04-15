@@ -53,7 +53,10 @@ class Link(object):
 
     def transmit(self, packet):
         if (self.startpoint.hostname == 'n1'):
-            Sim.plot('sequence.csv','%s,%s,%s\n' % (Sim.scheduler.current_time(),packet.sequence,'transmit'))
+            try:
+                Sim.plot('sequence.csv','%s,%s,%s\n' % (Sim.scheduler.current_time(),packet.sequence,'transmit'))
+            except:
+                pass
         packet.queueing_delay += Sim.scheduler.current_time() - packet.enter_queue
         delay = (8.0 * packet.length) / self.bandwidth
         packet.transmission_delay += delay

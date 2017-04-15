@@ -21,7 +21,6 @@ class BroadcastApp(object):
 def main():
     # parameters
     Sim.scheduler.reset()
-    Sim.set_debug(True)
 
     # setup network
     net = Network('../networks/five-nodes.txt')
